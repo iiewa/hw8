@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Random Colors</title>
+
+<style>
+	* {
+		font-family: Helvetica;
+	}
+	.content {
+		margin-bottom: 30px;
+		margin-top: 20px;
+	}
+	.colorbox {
+		height: 60px;
+		width: 60px;
+		margin-top: 5px;
+	}
+	
+</style>
+
+</head>
+<body>
+	<div id = "header">
+		<h1>Random color generator</h1>
+		<button id = "btn1">New random color:</button>
+	</div>
+	<div class = "content" id = "color1"></div>
+	<div>
+		<button id = "btn2">Another random color:</button>
+	</div>
+	<div class = "content" id = "color2"></div>
+	<hr>
+	<div class = "info">
+		<h3>xColors API</h3>
+        This API returns a JSON object representing a color. It allows users to
+		get random colors and provides the user its various color models (HEX,
+		RGB and HSL are supported).
+        <br>
+        <h3>Source</h3>
+        https://github.com/public-apis/public-apis
+        <br>
+        <h3>Options used for request</h3>
+        1. Using AJAX, I created an instance of the request object to make the request.
+        In order to get a random color and its hex value from the URL provided by xColors,
+		I used "request.open". Additionally, I employed an event handler + if statements
+		to ensure the request was succesful and to account for any errors that could have
+		occurred in the process. 
+        <br><br>
+        2. In the second request, I used "fetch" to get the same information from the 
+        URL. This time, however, I used arrow functions to get the data. Likwhich I still had
+		to use JSON parse). 
+        <br><br>
+        <h3>Applications:</h3>
+        1. This API would be helpful for a color palette generating site, which designers 
+		often use when ideating new designs. Generating random colors can easily
+		spark inspiration for graphic design, user interfaces, and beyond.
+        <br>
+        2. Another use for this API could be in games where characters are to have different
+		color themes. For example, if there are supposed to be 50 background characters in a 
+		game, it would much be much more fun, diverse, and easy to use this API to assign them 
+		the color of their clothes instead of hard-coding it yourself.
+	</div>
+
+	<script>
+	// METHOD 1: AJAX
+	document.getElementById("btn1").onclick = function() {
+		// create request object
+		req = new XMLHttpRequest();
+		
+		// open request file (set URL for the AJAX request to be the JSON file)
+		req.open("GET", "https://x-colors.herokuapp.com/api/random", true)
+		
+		// event handler + getting data
+		req.onreadystatechange = function() {
+			if (req.readyState == 4 && req.status == 200) {
+
+				result = req.responseText;
+				color_info = JSON.parse(result);
+
+				// reformatting information to display on webpage correctly
+				color_hex = color_info["hex"];
+				color_string = "background-color: "+ color_hex;
+				document.getElementById("color1").innerHTML = "hex: " + color_info["hex"] 
+															+ "<br><div class = 'colorbox' style = '" + color_string + "'>" + "</div>";
+			}
+			else if (req.readyState == 4 && req.status != 200) {
+				document.getElementById("color1").innerHTML = "Something is wrong!";
+			}
+			else if (req.readyState == 3) {
+				document.getElementById("color1").innerHTML = "Too soon! Please try again.";
+			}
+			else {
+				document.getElementById("color1").innerHTML = "Request failed.";
+			}
+		}
+		req.send();
+	}
+	// METHOD 2: fetch
+	document.getElementById("btn2").onclick = function() {
+		result2 = fetch("https://x-colors.herokuapp.com/api/random")
+            .then (result2 => result2.text())
+            .then (data =>
+            {
+                color_info = JSON.parse(data);
+
+				// reformatting information to display on webpage correctly
+				color_hex = color_info["hex"];
+				color_string = "background-color: "+color_hex;
+                document.getElementById("color2").innerHTML = "hex: " + color_info["hex"] 
+															+ "<br><div class = 'colorbox' style = '" + color_string + "'>" + "</div>"; 
+            })
+            .catch (error => console.log(error))
+	}
+	</script>
+</body>
+</html>
